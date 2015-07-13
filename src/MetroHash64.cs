@@ -6,10 +6,10 @@ namespace MetroHash
 
     public partial class MetroHash
     {
-        private static const ulong K0_64_1  = 0xC83A91E1;
-        private static const ulong K1_64_1  = 0x8648DBDB;
-        private static const ulong K2_64_1  = 0x7BDEC03B;
-        private static const ulong K3_64_1  = 0x2F5870A5;
+        private const ulong K0_64_1  = 0xC83A91E1;
+        private const ulong K1_64_1  = 0x8648DBDB;
+        private const ulong K2_64_1  = 0x7BDEC03B;
+        private const ulong K3_64_1  = 0x2F5870A5;
 
         public static void Hash64_1(byte[] lKey, uint lStartOffset, uint lLength, uint lSeed, out byte[] lOutput)
         {
@@ -84,10 +84,10 @@ namespace MetroHash
             lOutput = BitConverter.GetBytes(lHash);
         }
 
-        private static const ulong K0_64_2  = 0xD6D018F5;
-        private static const ulong K1_64_2  = 0xA2AA033B;
-        private static const ulong K2_64_2  = 0x62992FC1;
-        private static const ulong K3_64_2  = 0x30BC5B29;
+        private const ulong K0_64_2  = 0xD6D018F5;
+        private const ulong K1_64_2  = 0xA2AA033B;
+        private const ulong K2_64_2  = 0x62992FC1;
+        private const ulong K3_64_2  = 0x30BC5B29;
 
         public static void Hash64_2(byte[] lKey, uint lStartOffset, uint lLength, uint lSeed, out byte[] lOutput)
         {

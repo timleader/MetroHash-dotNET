@@ -36,10 +36,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MetroHash128.cs" />
-    <Compile Include="MetroHash128CRC.cs" />
-    <Compile Include="MetroHash64.cs" />
-    <Compile Include="MetroHashUtils.cs" />
+    <Compile Include="..\src\MetroHash128.cs">
+      <Link>MetroHash128.cs</Link>
+    </Compile>
+    <Compile Include="..\src\MetroHash128CRC.cs">
+      <Link>MetroHash128CRC.cs</Link>
+    </Compile>
+    <Compile Include="..\src\MetroHash64.cs">
+      <Link>MetroHash64.cs</Link>
+    </Compile>
+    <Compile Include="..\src\MetroHashUtils.cs">
+      <Link>MetroHashUtils.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
