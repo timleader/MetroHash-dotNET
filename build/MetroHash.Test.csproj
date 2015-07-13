@@ -53,6 +53,9 @@
     <Compile Include="..\test\MetroHashTest.cs">
       <Link>MetroHashTest.cs</Link>
     </Compile>
+    <Compile Include="..\test\MetroHashTestURL.cs">
+      <Link>MetroHashTestURL.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
