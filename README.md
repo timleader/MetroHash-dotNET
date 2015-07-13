@@ -25,3 +25,5 @@ The hash function generation software made no effort toward portability. While t
 ### DotNET port Info
 
 The dotnet port of metrohash is built against .net 2.0 for high compatiblity
+
+Please note 128-bit and 128-bit CRC hashing functions are not yet fully implemented.
