@@ -6,6 +6,7 @@ namespace MetroHash
 
     public partial class MetroHash
     {
+
         //---------------------------------------------------------------------------//
         /* rotate right idiom recognized by compiler*/
         private static ulong RotateRight(ulong lV, uint lK)

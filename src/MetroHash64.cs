@@ -23,7 +23,7 @@ namespace MetroHash
                 throw new IndexOutOfRangeException("Given Key for hashing is not of expected length");
             }
     
-            ulong lHash = ((lSeed + K2_64_2) * K0_64_2) + lLength;
+            ulong lHash = ((lSeed + K2_64_1) * K0_64_1) + lLength;
     
             if (lLength >= 32)
             {
@@ -165,4 +165,5 @@ namespace MetroHash
             lOutput = BitConverter.GetBytes(lHash);
         }
     }
+
 }
