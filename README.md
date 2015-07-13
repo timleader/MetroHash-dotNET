@@ -1,5 +1,5 @@
 ## MetroHash-dotNET: 'Faster, Better Hash Functions'
-# DotNET port of [MetroHash](https://github.com/jandrewrogers/MetroHash)
+### DotNET port of [MetroHash](https://github.com/jandrewrogers/MetroHash)
 
 MetroHash is a set of state-of-the-art hash functions for *non-cryptographic* use cases. They are notable for being algorithmically generated in addition to their exceptional performance. The set of published hash functions may be expanded in the future, having been selected from a very large set of hash functions that have been constructed this way.
 
@@ -22,6 +22,6 @@ Hash functions in the same family are effectively statistically unique. In other
 
 The hash function generation software made no effort toward portability. While these hash functions should be easily portable to big-endian microarchitectures, they have not been tested on them and the performance optimization algorithms were not targeted at them. ARM64 microarchitectures might be a worthwhile hash function generation targets if I had the hardware.
 
-# DotNET port Info
+### DotNET port Info
 
 The dotnet port of metrohash is built against .net 2.0 for high compatiblity
