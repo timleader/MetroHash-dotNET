@@ -12,27 +12,19 @@ namespace MetroHash.Test
     public class MetroHashTest
     {
         //---------------------------------------------------------------------------//
-        private static readonly char[] TEST_KEY_63 = 
-        {
-            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 
-            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-            '0', '1', '2'
-        };
+        private static readonly string TEST_KEY_63 = 
+            "012345678901234567890123456789012345678901234567890123456789012";
         
         //---------------------------------------------------------------------------//
-        private static readonly char[] TEST_HASH64_1 = 
+        private static readonly byte[] TEST_HASH64_1 = 
         {
-            '6', '5', '8', 'F', '0', '4', '4', 'F', '5', 'C', '7', '3', '0', 'E', '4', '0'
+            0x65, 0x8F, 0x04, 0x4F, 0x5C, 0x73, 0x0E, 0x40
         };
 
         //---------------------------------------------------------------------------//
-        private static readonly char[] TEST_HASH64_2 = 
+        private static readonly byte[] TEST_HASH64_2 = 
         {
-            '0', '7', '3', 'C', 'A', 'A', 'B', '9', '6', '0', '6', '2', '3', '2', '1', '1'
+            0x07, 0x3C, 0xAA, 0xB9, 0x60, 0x62, 0x32, 0x11
         };
 
         //---------------------------------------------------------------------------//
@@ -40,13 +32,14 @@ namespace MetroHash.Test
         public void Hash64_1_SanityTest()
         {
             byte[] lHash = null;
-
-            byte[] lInput = new byte[TEST_KEY_63.Length];
-            Buffer.BlockCopy(TEST_KEY_63, 0, lInput, 0, TEST_KEY_63.Length);
+            byte[] lInput = Encoding.UTF8.GetBytes(TEST_KEY_63);
 
             MetroHash.Hash64_1(lInput, 0, (uint)lInput.Length, 0, out lHash);
 
-            Assert.AreEqual(1, TEST_HASH64_1);
+            ulong lTestHash = BitConverter.ToUInt64(lHash, 0);
+            ulong lTargetHash = BitConverter.ToUInt64(TEST_HASH64_1, 0);
+
+            Assert.AreEqual(lTestHash, lTargetHash);
         }
 
         //---------------------------------------------------------------------------//
@@ -54,13 +47,14 @@ namespace MetroHash.Test
         public void Hash64_2_SanityTest()
         {
             byte[] lHash = null;
-
-            byte[] lInput = new byte[TEST_KEY_63.Length];
-            Buffer.BlockCopy(TEST_KEY_63, 0, lInput, 0, TEST_KEY_63.Length);
+            byte[] lInput = Encoding.UTF8.GetBytes(TEST_KEY_63);
 
             MetroHash.Hash64_2(lInput, 0, (uint)lInput.Length, 0, out lHash);
 
-            Assert.AreEqual(1, TEST_HASH64_2);
+            ulong lTestHash = BitConverter.ToUInt64(lHash, 0);
+            ulong lTargetHash = BitConverter.ToUInt64(TEST_HASH64_2, 0);
+
+            Assert.AreEqual(lTestHash, lTargetHash);
         }
 
         //---------------------------------------------------------------------------//
