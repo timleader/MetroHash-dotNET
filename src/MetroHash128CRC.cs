@@ -88,81 +88,89 @@ namespace MetroHash
             lOutput = new byte[16];
             Buffer.BlockCopy(lV, 0, lOutput, 0, 16);
         }
+        
+        //---------------------------------------------------------------------------//
+        private const ulong K0_128_CRC_2  = 0xEE783E2F;
+        private const ulong K1_128_CRC_2  = 0xAD07C493;
+        private const ulong K2_128_CRC_2  = 0x797A90BB;
+        private const ulong K3_128_CRC_2  = 0x2E4B2E1B;
 
-        /*
-        void metrohash128crc_2(const uint8_t * key, uint64_t len, uint32_t seed, uint8_t * out)
+        //---------------------------------------------------------------------------//
+        public static void Hash128CRC_2(byte[] lKey, uint lStartOffset, uint lLength, uint lSeed, out byte[] lOutput)
         {
-            static const uint64_t k0 = 0xEE783E2F;
-            static const uint64_t k1 = 0xAD07C493;
-            static const uint64_t k2 = 0x797A90BB;
-            static const uint64_t k3 = 0x2E4B2E1B;
+            uint lKeyIndex = lStartOffset;
+            uint lKeyEnd = lKeyIndex + lLength;
+            
+            if (lKey.Length < lKeyEnd)
+            {
+                throw new IndexOutOfRangeException("Given Key for hashing is not of expected length");
+            }
+    
+            ulong[] lV = new ulong[4];
 
-            const uint8_t * ptr = reinterpret_cast<const uint8_t*>(key);
-            const uint8_t * const end = ptr + len;
+            lV[0] = ((lSeed - K0_128_CRC_2) * K3_128_CRC_2) + lLength;
+            lV[1] = ((lSeed + K1_128_CRC_2) * K2_128_CRC_2) + lLength;
     
-            uint64_t v[4];
-    
-            v[0] = ((static_cast<uint64_t>(seed) - k0) * k3) + len;
-            v[1] = ((static_cast<uint64_t>(seed) + k1) * k2) + len;
-    
-            if (len >= 32)
-            {        
-                v[2] = ((static_cast<uint64_t>(seed) + k0) * k2) + len;
-                v[3] = ((static_cast<uint64_t>(seed) - k1) * k3) + len;
+            if (lLength >= 32)
+            {
+                lV[2] = ((lSeed + K0_128_CRC_2) * K2_128_CRC_2) + lLength;
+                lV[3] = ((lSeed - K1_128_CRC_2) * K3_128_CRC_2) + lLength;
 
                 do
                 {
-                    v[0] ^= _mm_crc32_u64(v[0], read_u64(ptr)); ptr += 8;
-                    v[1] ^= _mm_crc32_u64(v[1], read_u64(ptr)); ptr += 8;
-                    v[2] ^= _mm_crc32_u64(v[2], read_u64(ptr)); ptr += 8;
-                    v[3] ^= _mm_crc32_u64(v[3], read_u64(ptr)); ptr += 8;
+                    lV[0] ^= CRC32_u64(lV[0], Read_u64(lKey, lKeyIndex)); lKeyIndex += 8;
+                    lV[1] ^= CRC32_u64(lV[1], Read_u64(lKey, lKeyIndex)); lKeyIndex += 8;
+                    lV[2] ^= CRC32_u64(lV[2], Read_u64(lKey, lKeyIndex)); lKeyIndex += 8;
+                    lV[3] ^= CRC32_u64(lV[3], Read_u64(lKey, lKeyIndex)); lKeyIndex += 8;
                 }
-                while (ptr <= (end - 32));
+                while (lKeyIndex <= (lKeyEnd - 32));
 
-                v[2] ^= rotate_right(((v[0] + v[3]) * k0) + v[1], 12) * k1;
-                v[3] ^= rotate_right(((v[1] + v[2]) * k1) + v[0], 19) * k0;
-                v[0] ^= rotate_right(((v[0] + v[2]) * k0) + v[3], 12) * k1;
-                v[1] ^= rotate_right(((v[1] + v[3]) * k1) + v[2], 19) * k0;
+                lV[2] ^= RotateRight(((lV[0] + lV[3]) * K0_128_CRC_2) + lV[1], 12) * K1_128_CRC_2;
+                lV[3] ^= RotateRight(((lV[1] + lV[2]) * K1_128_CRC_2) + lV[0], 19) * K0_128_CRC_2;
+                lV[0] ^= RotateRight(((lV[0] + lV[2]) * K0_128_CRC_2) + lV[3], 12) * K1_128_CRC_2;
+                lV[1] ^= RotateRight(((lV[1] + lV[3]) * K1_128_CRC_2) + lV[2], 19) * K0_128_CRC_2;
             }
     
-            if ((end - ptr) >= 16)
+            if ((lKeyEnd - lKeyIndex) >= 16)
             {
-                v[0] += read_u64(ptr) * k2; ptr += 8; v[0] = rotate_right(v[0],41) * k3;
-                v[1] += read_u64(ptr) * k2; ptr += 8; v[1] = rotate_right(v[1],41) * k3;
-                v[0] ^= rotate_right((v[0] * k2) + v[1], 10) * k1;
-                v[1] ^= rotate_right((v[1] * k3) + v[0], 10) * k0;
+                lV[0] += Read_u64(lKey, lKeyIndex) * K2_128_CRC_2; lKeyIndex += 8; lV[0] = RotateRight(lV[0], 41) * K3_128_CRC_2;
+                lV[1] += Read_u64(lKey, lKeyIndex) * K2_128_CRC_2; lKeyIndex += 8; lV[1] = RotateRight(lV[1], 41) * K3_128_CRC_2;
+                lV[0] ^= RotateRight((lV[0] * K2_128_CRC_2) + lV[1], 10) * K1_128_CRC_2;
+                lV[1] ^= RotateRight((lV[1] * K3_128_CRC_2) + lV[0], 10) * K0_128_CRC_2;
             }
     
-            if ((end - ptr) >= 8)
+            if ((lKeyEnd - lKeyIndex) >= 8)
             {
-                v[0] += read_u64(ptr) * k2; ptr += 8; v[0] = rotate_right(v[0],34) * k3;
-                v[0] ^= rotate_right((v[0] * k2) + v[1], 22) * k1;
+                lV[0] += Read_u64(lKey, lKeyIndex) * K2_128_CRC_2; lKeyIndex += 8; lV[0] = RotateRight(lV[0], 34) * K3_128_CRC_2;
+                lV[0] ^= RotateRight((lV[0] * K2_128_CRC_2) + lV[1], 22) * K1_128_CRC_2;
             }
     
-            if ((end - ptr) >= 4)
+            if ((lKeyEnd - lKeyIndex) >= 4)
             {
-                v[1] ^= _mm_crc32_u64(v[0], read_u32(ptr)); ptr += 4;
-                v[1] ^= rotate_right((v[1] * k3) + v[0], 14) * k0;
+                lV[1] ^= CRC32_u64(lV[0], Read_u32(lKey, lKeyIndex)); lKeyIndex += 4;
+                lV[1] ^= RotateRight((lV[1] * K3_128_CRC_2) + lV[0], 14) * K0_128_CRC_2;
             }
     
-            if ((end - ptr) >= 2)
+            if ((lKeyEnd - lKeyIndex) >= 2)
             {
-                v[0] ^= _mm_crc32_u64(v[1], read_u16(ptr)); ptr += 2;
-                v[0] ^= rotate_right((v[0] * k2) + v[1], 15) * k1;
+                lV[0] ^= CRC32_u64(lV[1], Read_u16(lKey, lKeyIndex)); lKeyIndex += 2;
+                lV[0] ^= RotateRight((lV[0] * K2_128_CRC_2) + lV[1], 15) * K1_128_CRC_2;
             }
     
-            if ((end - ptr) >= 1)
+            if ((lKeyEnd - lKeyIndex) >= 1)
             {
-                v[1] ^= _mm_crc32_u64(v[0], read_u8 (ptr));
-                v[1] ^= rotate_right((v[1] * k3) + v[0],  18) * k0;
+                lV[1] ^= CRC32_u64(lV[0], Read_u8(lKey, lKeyIndex));
+                lV[1] ^= RotateRight((lV[1] * K3_128_CRC_2) + lV[0], 18) * K0_128_CRC_2;
             }
-    
-            v[0] += rotate_right((v[0] * k0) + v[1], 15);
-            v[1] += rotate_right((v[1] * k1) + v[0], 27);
-            v[0] += rotate_right((v[0] * k0) + v[1], 15);
-            v[1] += rotate_right((v[1] * k1) + v[0], 27);
 
-            memcpy(out, v, 16);
-        }*/
+            lV[0] += RotateRight((lV[0] * K0_128_CRC_2) + lV[1], 15);
+            lV[1] += RotateRight((lV[1] * K1_128_CRC_2) + lV[0], 27);
+            lV[0] += RotateRight((lV[0] * K0_128_CRC_2) + lV[1], 15);
+            lV[1] += RotateRight((lV[1] * K1_128_CRC_2) + lV[0], 27);
+
+            lOutput = new byte[16];
+            Buffer.BlockCopy(lV, 0, lOutput, 0, 16);
+        }
+
     }
 }
