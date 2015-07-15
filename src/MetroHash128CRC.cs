@@ -4,7 +4,8 @@ using System;
 namespace MetroHash
 {
     public partial class MetroHash
-    {        
+    {       
+
         //---------------------------------------------------------------------------//
         private const ulong K0_128_CRC_1  = 0xC83A91E1;
         private const ulong K1_128_CRC_1  = 0x8648DBDB;
@@ -34,10 +35,10 @@ namespace MetroHash
 
                 do
                 {
-                    lV[0] ^= _mm_crc32_u64(lV[0], Read_u64(lKey, lKeyIndex)); lKeyIndex += 8;
-                    lV[1] ^= _mm_crc32_u64(lV[1], Read_u64(lKey, lKeyIndex)); lKeyIndex += 8;
-                    lV[2] ^= _mm_crc32_u64(lV[2], Read_u64(lKey, lKeyIndex)); lKeyIndex += 8;
-                    lV[3] ^= _mm_crc32_u64(lV[3], Read_u64(lKey, lKeyIndex)); lKeyIndex += 8;
+                    lV[0] ^= CRC32_u64(lV[0], Read_u64(lKey, lKeyIndex)); lKeyIndex += 8;
+                    lV[1] ^= CRC32_u64(lV[1], Read_u64(lKey, lKeyIndex)); lKeyIndex += 8;
+                    lV[2] ^= CRC32_u64(lV[2], Read_u64(lKey, lKeyIndex)); lKeyIndex += 8;
+                    lV[3] ^= CRC32_u64(lV[3], Read_u64(lKey, lKeyIndex)); lKeyIndex += 8;
                 }
                 while (lKeyIndex <= (lKeyEnd - 32));
 
@@ -49,45 +50,46 @@ namespace MetroHash
     
             if ((lKeyEnd - lKeyIndex) >= 16)
             {
-                lV[0] += Read_u64(lKey, lKeyIndex) * k2; lKeyIndex += 8; lV[0] = RotateRight(lV[0],34) * k3;
-                lV[1] += Read_u64(lKey, lKeyIndex) * k2; lKeyIndex += 8; lV[1] = RotateRight(lV[1],34) * k3;
-                lV[0] ^= RotateRight((lV[0] * k2) + lV[1], 30) * k1;
-                lV[1] ^= RotateRight((lV[1] * k3) + lV[0], 30) * k0;
+                lV[0] += Read_u64(lKey, lKeyIndex) * K2_128_CRC_1; lKeyIndex += 8; lV[0] = RotateRight(lV[0], 34) * K3_128_CRC_1;
+                lV[1] += Read_u64(lKey, lKeyIndex) * K2_128_CRC_1; lKeyIndex += 8; lV[1] = RotateRight(lV[1], 34) * K3_128_CRC_1;
+                lV[0] ^= RotateRight((lV[0] * K2_128_CRC_1) + lV[1], 30) * K1_128_CRC_1;
+                lV[1] ^= RotateRight((lV[1] * K3_128_CRC_1) + lV[0], 30) * K0_128_CRC_1;
             }
     
             if ((lKeyEnd - lKeyIndex) >= 8)
             {
-                lV[0] += Read_u64(lKey, lKeyIndex) * k2; lKeyIndex += 8; lV[0] = RotateRight(lV[0],36) * k3;
-                lV[0] ^= RotateRight((lV[0] * k2) + lV[1], 23) * k1;
+                lV[0] += Read_u64(lKey, lKeyIndex) * K2_128_CRC_1; lKeyIndex += 8; lV[0] = RotateRight(lV[0], 36) * K3_128_CRC_1;
+                lV[0] ^= RotateRight((lV[0] * K2_128_CRC_1) + lV[1], 23) * K1_128_CRC_1;
             }
     
             if ((lKeyEnd - lKeyIndex) >= 4)
             {
-                lV[1] ^= _mm_crc32_u64(lV[0], Read_u64(lKey, lKeyIndex)); lKeyIndex += 4;
-                lV[1] ^= RotateRight((lV[1] * k3) + lV[0], 19) * k0;
+                lV[1] ^= CRC32_u64(lV[0], Read_u64(lKey, lKeyIndex)); lKeyIndex += 4;
+                lV[1] ^= RotateRight((lV[1] * K3_128_CRC_1) + lV[0], 19) * K0_128_CRC_1;
             }
     
             if ((lKeyEnd - lKeyIndex) >= 2)
             {
-                lV[0] ^= _mm_crc32_u64(lV[1], Read_u16(lKey, lKeyIndex)); lKeyIndex += 2;
-                lV[0] ^= RotateRight((lV[0] * k2) + lV[1], 13) * k1;
+                lV[0] ^= CRC32_u64(lV[1], Read_u16(lKey, lKeyIndex)); lKeyIndex += 2;
+                lV[0] ^= RotateRight((lV[0] * K2_128_CRC_1) + lV[1], 13) * K1_128_CRC_1;
             }
     
             if ((lKeyEnd - lKeyIndex) >= 1)
             {
-                lV[1] ^= _mm_crc32_u64(lV[0], Read_u8(lKey, lKeyIndex));
-                lV[1] ^= RotateRight((lV[1] * k3) + lV[0], 17) * k0;
+                lV[1] ^= CRC32_u64(lV[0], Read_u8(lKey, lKeyIndex));
+                lV[1] ^= RotateRight((lV[1] * K3_128_CRC_1) + lV[0], 17) * K0_128_CRC_1;
             }
-    
-            lV[0] += RotateRight((lV[0] * k0) + lV[1], 11);
-            lV[1] += RotateRight((lV[1] * k1) + lV[0], 26);
-            lV[0] += RotateRight((lV[0] * k0) + lV[1], 11);
-            lV[1] += RotateRight((lV[1] * k1) + lV[0], 26);
+
+            lV[0] += RotateRight((lV[0] * K0_128_CRC_1) + lV[1], 11);
+            lV[1] += RotateRight((lV[1] * K1_128_CRC_1) + lV[0], 26);
+            lV[0] += RotateRight((lV[0] * K0_128_CRC_1) + lV[1], 11);
+            lV[1] += RotateRight((lV[1] * K1_128_CRC_1) + lV[0], 26);
             
             lOutput = new byte[16];
             Buffer.BlockCopy(lV, 0, lOutput, 0, 16);
         }
 
+        /*
         void metrohash128crc_2(const uint8_t * key, uint64_t len, uint32_t seed, uint8_t * out)
         {
             static const uint64_t k0 = 0xEE783E2F;
@@ -161,6 +163,6 @@ namespace MetroHash
             v[1] += rotate_right((v[1] * k1) + v[0], 27);
 
             memcpy(out, v, 16);
-        }
+        }*/
     }
 }

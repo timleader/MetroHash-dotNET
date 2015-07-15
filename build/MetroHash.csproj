@@ -45,6 +45,9 @@
     <Compile Include="..\src\MetroHash64.cs">
       <Link>MetroHash64.cs</Link>
     </Compile>
+    <Compile Include="..\src\MetroHashCRC.cs">
+      <Link>MetroHashCRC.cs</Link>
+    </Compile>
     <Compile Include="..\src\MetroHashUtils.cs">
       <Link>MetroHashUtils.cs</Link>
     </Compile>
